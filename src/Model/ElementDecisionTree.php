@@ -46,12 +46,17 @@ class ElementDecisionTree extends BaseElement
 
         if ($this->IsInDB()) {
             $stepSelector = HasOneSelectOrCreateField::create(
-                $this, 'FirstStep', 'First Step', DecisionTreeStep::get_initial_steps()->map(), $this->FirstStep(), $this
+                $this,
+                'FirstStep',
+                'First Step',
+                DecisionTreeStep::get_initial_steps()->map(),
+                $this->FirstStep(),
+                $this
             );
 
             $fields->addFieldToTab('Root.Main', $stepSelector);
 
-            $fields->addFieldToTab('Root.Tree', DecisionTreeStepPreview::create('Tree', $this->FirstStep()));
+            // $fields->addFieldToTab('Root.Tree', DecisionTreeStepPreview::create('Tree', $this->FirstStep()));
         } else {
             $info = LiteralField::create('info', sprintf(
                 '<p class="message info notice">%s</p>',
@@ -65,10 +70,10 @@ class ElementDecisionTree extends BaseElement
     }
 
     /**
-    * Builds the Edit Link to the FirstStep of this element
-    *
-    * @return string
-    */
+     * Builds the Edit Link to the FirstStep of this element
+     *
+     * @return string
+     */
     public function CMSEditFirstStepLink()
     {
         $page = $this->getPage();

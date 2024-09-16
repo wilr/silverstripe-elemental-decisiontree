@@ -49,13 +49,26 @@ class DecisionTreeAnswer extends DataObject
             if ($this->ResultingStep()->exists()) {
                 array_push($availableStepsID, $this->ResultingStepID);
             }
+
             $steps = [];
+
             if ($availableStepsID) {
-                $steps = DecisionTreeStep::get()->filter('ID', $availableStepsID)->map();
+                $steps = DecisionTreeStep::get()->filter('ID', $availableStepsID);
+
+                if ($this->QuestionID) {
+                    $steps = $steps->exclude('ID', $this->QuestionID);
+                }
+
+                $steps = $steps->map();
             }
 
             $stepSelector = HasOneSelectOrCreateField::create(
-                $this, 'ResultingStep', 'If selected, go to', $steps, $this->ResultingStep(), $this
+                $this,
+                'ResultingStep',
+                'If selected, go to',
+                $steps,
+                $this->ResultingStep(),
+                $this
             );
 
             $fields->addFieldsToTab('Root.Main', $stepSelector);
@@ -97,10 +110,10 @@ class DecisionTreeAnswer extends DataObject
     }
 
     /**
-    * Used as breadcrumbs on the parent Step
-    *
-    * @return String
-    */
+     * Used as breadcrumbs on the parent Step
+     *
+     * @return string
+     */
     public function TitleWithQuestion()
     {
         $title = $this->Title;
@@ -111,14 +124,15 @@ class DecisionTreeAnswer extends DataObject
     }
 
     /**
-    * Create a link that allowd to edit this object in the CMS
-    * To do this, it first finds its parent question
-    * then rewind the tree up to the element
-    * then append its edit url to the edit url of its parent question
-    *
-    * @return String
-    */
-    public function CMSEditLink() {
+     * Create a link that allowd to edit this object in the CMS
+     * To do this, it first finds its parent question
+     * then rewind the tree up to the element
+     * then append its edit url to the edit url of its parent question
+     *
+     * @return String
+     */
+    public function CMSEditLink()
+    {
         if ($this->Question()->exists()) {
             $origin = $this->Question()->getTreeOrigin();
 
@@ -139,10 +153,10 @@ class DecisionTreeAnswer extends DataObject
     }
 
     /**
-    * Construct the link tp create a new ResultingStep for this answer
-    *
-    * @return String
-    */
+     * Construct the link tp create a new ResultingStep for this answer
+     *
+     * @return String
+     */
     public function CMSAddStepLink()
     {
         $link = Controller::join_links(
@@ -154,10 +168,10 @@ class DecisionTreeAnswer extends DataObject
     }
 
     /**
-    * Recursively construct the link to edit this object
-    *
-    * @return String
-    */
+     * Recursively construct the link to edit this object
+     *
+     * @return String
+     */
     public function getRecursiveEditPath()
     {
         $path = sprintf('ItemEditForm/field/Answers/item/%s/', $this->ID);
@@ -173,10 +187,10 @@ class DecisionTreeAnswer extends DataObject
     }
 
     /**
-    * Return only the url segment to edit this object
-    *
-    * @return String
-    */
+     * Return only the url segment to edit this object
+     *
+     * @return String
+     */
     public function getRecursiveEditPathForSelf()
     {
         return sprintf('ItemEditForm/field/Answers/item/%s/', $this->ID);
